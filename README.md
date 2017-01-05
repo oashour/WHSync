@@ -14,3 +14,5 @@ Note that task names in Habitica are formed by the list name + task name in Wund
 The best option for using this script is to run it every X minutes on a webserver. It currently requires registering your own Wunderlist app until I get authentication working.
 
 Note that this script is very early in development and is full of bugs and unhandled exceptions. I could use collaborators on this.
+
+The API Wrapper is based on https://github.com/philadams/habitica
