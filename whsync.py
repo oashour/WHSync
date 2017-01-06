@@ -1,6 +1,8 @@
 import api as habiticaAPI
 import wunderpy2
 import whlib
+import sys
+from time import sleep
 
 AUTH_CONF = 'auth.txt'
 WL_AUTH = 'wlAuth.txt'
@@ -48,7 +50,13 @@ def main():
     whlib.printSync(syncTasks)
     whlib.sync(hbt, syncTasks)                  
     
-# 6 30 44 46 47 48 49 50 51
+# 6 30 41 44 46 47 48 49 50 51
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 1:
+        main()
+    elif len(sys.argv) == 2:
+        while True:
+            main()
+            print('==================================')
+            sleep(int(sys.argv[1]))           
     
