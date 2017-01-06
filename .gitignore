@@ -48,3 +48,5 @@ Temporary Items
 
 # Text Files that do not need to be synchronized
 *.txt
+# Python
+__pycache__
