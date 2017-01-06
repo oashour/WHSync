@@ -36,7 +36,7 @@ def main():
         if noPrompt:
             print("No prompt option selected. Won't add new lists.")
         else:
-            listId = getSyncLists(lists) 
+            listId = whlib.getSyncLists(lists) 
     
     print('Fetching Wunderlist and Habitica tasks.')
     wlTasks = whlib.getWLTasks(client);

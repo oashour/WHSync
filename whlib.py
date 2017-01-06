@@ -87,7 +87,7 @@ def getSyncLists(lists):
     listId = [lists[id]['id'] for id in listId]
     
     # Print IDs to file for future extraction
-    syncListFile = open(SYNC_LIST, 'a')  
+    syncListFile = open(SYNC_LIST, 'a') 
     for item in listId:
         syncListFile.write("%s\n" % item)
     syncListFile.close() 
