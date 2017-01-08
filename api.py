@@ -105,6 +105,7 @@ class Habitica(object):
     def __call__(self, **kwargs):
         method = kwargs.pop('_method', 'get')
         aspect_id = kwargs.pop('_id', None)
+        check_id = kwargs.pop('_checkid', None)
         
         # build up URL... Habitica's api is the *teeniest* bit annoying
         # so either i need to find a cleaner way here, or i should
@@ -119,10 +120,8 @@ class Habitica(object):
                                         self.aspect,
                                         str(aspect_id),
                                         self.resource)
-                else:
-                    uri = '%s/%s/%s' % (uri,
-                                    self.aspect,
-                                    str(aspect_id))
+                if check_id:
+                    uri = '%s/%s/score' % (uri, check_id)
             elif self.aspect == 'tasks':  
                 uri = '%s/%s/%s' % (uri,
                                     self.aspect,
