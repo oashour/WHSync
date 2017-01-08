@@ -1,46 +1,51 @@
 import os 
 from time import sleep
 
-SYNC_LIST = 'syncList.txt'
-ALL_LIST = 'allList.txt'
+SYNC_LIST = 'syncId.txt'
+LIST_CACHE = 'listCache.txt'
 WL_AUTH = 'wlAuth.txt'
 HABITICA_REQUEST_WAIT_TIME = 0.5  # time to pause between concurrent requestsdef getNewLists(lists):
  
-def getNewLists(lists):
+def getNewLists(client):
     """ Get all the new Wunderlist lists not in cache and refresh cache
     
     Keyword Arguments:
-    lists: a list of dictionaries returned by the Wunderlist API.
+    client: wunderlist client object
     """
-    
-    listsList = ''
-    for i in range(0, len(lists)):
-         listsList = listsList + '\n' + str(i) + ' ' + lists[i]['title'] 
-         
+    print('Fetching all Wunderlist lists.')  
+    lists = client.get_lists() # Get lists
+    listsList = [l['id'] for l in lists]
     try:
-        with open(ALL_LIST) as f:
+        with open(LIST_CACHE) as f:
             listsCache = f.readlines()
             listsCache = [str.strip('\n') for str in listsCache]
     except IOError:
-        listsCache = ''
+        listsCache = []
         try:
             os.remove(SYNC_LIST) # In case it's still there delete it too
         except:
             pass
-            
-    # Find the new lists
-    new = list(set(listsList.split('\n')) - set(listsCache))
-    new = list(filter(None, new)) # Filter pesky empty string
-    new.sort(key=lambda x: int(x.split()[0]))
-    # If cache is empty then this is the 'first' time running the programs
-    if not listsCache:
-        print('First time setup. Please follow prompts.') 
-    if new: # And new lists exist, only now do we need to print a cache file
-        allListsFile = open(ALL_LIST, 'w')  
-        allListsFile.write("%s\n" % listsList)
-        allListsFile.close()  
+               
+    new = [l for l in lists if str(l['id']) not in listsCache]
     
-    return new
+    if not new:
+        print('No new lists found.')
+    else:
+        print('New Uncached lists found:')
+        print('--------------------------')
+        for l in new:
+            print(lists.index(l)+1, l['title'])
+        # Get ID of lists user wants to sync
+        if not listsCache: # no lists in cache, first time setup
+            print('First time setup. Please follow prompts.')
+        getSyncLists(lists)
+    
+    # If cache is empty then this is the 'first' time running the programs 
+    if new: # And new lists exist, only now do we need to print a cache file
+        allListsFile = open(LIST_CACHE, 'w')  
+        for l in lists:
+            allListsFile.write("%s\n" % l['id'])
+        allListsFile.close()  
 
 def getSyncLists(lists):
     """ Get the IDs of the lists the user wants to sync
@@ -81,7 +86,12 @@ def getSyncLists(lists):
     else:
         listId = list(map(int, listId))
     listId = list(set(listId)) # Remove duplicates
-    listId = [k for k in listId if k <= len(lists)-1] # Remove incorrect ones
+    listId = [k for k in listId if k <= len(lists)] # Remove incorrect ones
+    listId = [k-1 for k in listId] # Change to 0 indexing
+    
+    print('Lists chosen for synchronization:')
+    for id in listId:
+        print(lists[id]['title'])
     
     # Extract actual IDs based on number
     listId = [lists[id]['id'] for id in listId]
@@ -158,7 +168,7 @@ def printSync(syncTasks):
     print('------------------')
 
 def getHbtTasks(wlTasks, hbtTasks):
-    # Work on Todos
+    # Work on Todos (second element in each tuple)
     x = hbtTasks[1]; y = wlTasks[1]    
     todosC = [item for item in x
                        if item['text'] not in [d['title'] for d in y]]

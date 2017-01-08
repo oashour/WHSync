@@ -1,11 +1,13 @@
 import api as habiticaAPI
 import wunderpy2
 import whlib
+import sys
+from time import sleep
 
 AUTH_CONF = 'auth.txt'
 WL_AUTH = 'wlAuth.txt'
 
-def main():
+def main(nonInt):
     print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')
     print('Connecting to APIs.')
     # Set up Habitica
@@ -17,26 +19,11 @@ def main():
     api = wunderpy2.WunderApi()	
     auth = whlib.getWLAuth()
     client = api.get_client(auth['accessToken'], auth['clientId'])
-    
-    noPrompt = 0
-    
-    print('Fetching all Wunderlist lists.')  
-    lists = client.get_lists() # Get lists
  
-    newLists = whlib.getNewLists(lists)
-    
-    if not newLists:
-        print('No new lists found.')
+    if nonInt:
+        print("Program run in non-interactive mode. Won't fetch lists.")
     else:
-        print('New Uncached lists found:')
-        print('--------------------------')
-        for list in newLists:
-            print(list)
-        # Get ID of lists user wants to sync
-        if noPrompt:
-            print("No prompt option selected. Won't add new lists.")
-        else:
-            listId = whlib.getSyncLists(lists) 
+        whlib.getNewLists(client) 
     
     print('Fetching Wunderlist and Habitica tasks.')
     wlTasks = whlib.getWLTasks(client);
@@ -48,7 +35,18 @@ def main():
     whlib.printSync(syncTasks)
     whlib.sync(hbt, syncTasks)                  
     
-# 6 30 44 46 47 48 49 50 51
+# 6 30 41 44 46 47 48 49 50 51
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 1:
+        nonInt = False
+        main(nonInt)
+    elif len(sys.argv) == 2:
+        while True:
+            try:
+                nonInt = True
+                main(nonInt)
+                print('==================================')
+                sleep(int(sys.argv[1]))           
+            except:
+                sleep(int(sys.argv[1]))
     
