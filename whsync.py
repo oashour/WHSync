@@ -3,6 +3,7 @@ import wunderpy2
 import whlib
 import sys
 from time import sleep
+sys.stdout.flush() # Flush stdout
 
 AUTH_CONF = 'auth.txt'
 WL_AUTH = 'wlAuth.txt'
