@@ -56,7 +56,10 @@ if __name__ == '__main__':
         main()
     elif len(sys.argv) == 2:
         while True:
-            main()
-            print('==================================')
-            sleep(int(sys.argv[1]))           
+            try:
+                main()
+                print('==================================')
+                sleep(int(sys.argv[1]))           
+            except:
+                sleep(int(sys.argv[1]))
     
