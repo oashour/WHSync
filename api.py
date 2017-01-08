@@ -114,10 +114,16 @@ class Habitica(object):
             uri = '%s/%s' % (self.auth['url'],
                                 API_URI_BASE)
             if aspect_id is not None:
-                uri = '%s/%s/%s' % (uri,
+                if self.resource == 'checklist':
+                    uri = '%s/%s/%s/%s' % (uri,
+                                        self.aspect,
+                                        str(aspect_id),
+                                        self.resource)
+                else:
+                    uri = '%s/%s/%s' % (uri,
                                     self.aspect,
                                     str(aspect_id))
-            elif self.aspect == 'tasks':
+            elif self.aspect == 'tasks':  
                 uri = '%s/%s/%s' % (uri,
                                     self.aspect,
                                     self.resource)
@@ -145,7 +151,7 @@ class Habitica(object):
             res = getattr(requests, method)(uri, headers=self.headers,
                                             params=kwargs)
 
-        #print(res.url)  # debug...
+        print(res.url)  # debug...
         if res.status_code == requests.codes.ok:
             return res.json()["data"]
         else:
