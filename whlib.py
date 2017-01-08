@@ -117,7 +117,8 @@ def sync(hbt, syncTasks):
     # Add tasks. Simply add them by name
     for task in todosA:
         diff = calcDiff(task['title'])
-        hbt.user.tasks(type='todo', text=task['title'], priority=diff, _method='post')
+        hbt.user.tasks(type='todo', text=task['title'], date = task['due_date'],
+                       priority=diff, _method='post')
         print('Added task "', task['title'], '" to Habitica.',sep='')
     
     # Complete tasks, find the hid of this task and mark it as complete.
@@ -174,6 +175,12 @@ def getHbtTasks(wlTasks, hbtTasks):
                        if item['text'] not in [d['title'] for d in y]]
     todosA = [item for item in y
                   if item['title'] not in [d['text'] for d in x]]
+    #for task in todosA: # In case time zones are needed
+    #    date = datetime.strptime(task['due_date'],'%Y-%m-%d') # Strip formatting
+    #    zone = 2 # How to determine automatically?
+    #    date = date - timedelta(days=1, hour=-zone)
+    #    date = datetime.strftime(date, '%Y-%m-%dT%H:00:00.000Z')
+    #    task['due_date'] = date
     
     # Work on Dailies
     x = hbtTasks[0]; y = wlTasks[0];
