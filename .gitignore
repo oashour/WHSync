@@ -50,3 +50,5 @@ Temporary Items
 *.txt
 # Python
 __pycache__
+*.pyc
+temp.py
