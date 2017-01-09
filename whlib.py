@@ -117,8 +117,19 @@ def sync(hbt, syncTasks):
     # Add tasks. Simply add them by name
     for task in todosA:
         diff = calcDiff(task['title'])
-        hbt.user.tasks(type='todo', text=task['title'], date = task['due_date'],
-                       priority=diff, _method='post')
+        if 'due_date' in task:
+            newTask = hbt.user.tasks(type='todo', text=task['title'], 
+                                    date = task['due_date'],
+                                    priority=diff, _method='post')
+        else:
+            newTask = hbt.user.tasks(type='todo', text=task['title'],
+                            priority=diff, _method='post')
+        for sub in task['subs']:
+            newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
+            if sub['completed']:
+                cid = newTask['checklist'][-1]['id'] # Last added is last in list
+                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score
+        
         print('Added task "', task['title'], '" to Habitica.',sep='')
     
     # Complete tasks, find the hid of this task and mark it as complete.
@@ -168,13 +179,15 @@ def printSync(syncTasks):
                                 in dailysC if 'text' in d]))
     print('------------------')
 
-def getHbtTasks(wlTasks, hbtTasks):
+def getHbtTasks(wlTasks, hbtTasks, client):
     # Work on Todos (second element in each tuple)
     x = hbtTasks[1]; y = wlTasks[1]    
     todosC = [item for item in x
                        if item['text'] not in [d['title'] for d in y]]
     todosA = [item for item in y
                   if item['title'] not in [d['text'] for d in x]]
+    for item in todosA:
+        item['subs'] = client.get_task_subtasks(item['id'], completed=True)
     #for task in todosA: # In case time zones are needed
     #    date = datetime.strptime(task['due_date'],'%Y-%m-%d') # Strip formatting
     #    zone = 2 # How to determine automatically?

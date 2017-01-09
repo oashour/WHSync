@@ -31,7 +31,7 @@ def main(nonInt):
     hbtDailys = hbt.user.tasks(type='dailys')
     
     print('Determining what tasks to add, delete or complete.')
-    syncTasks = whlib.getHbtTasks(wlTasks, (hbtDailys, hbtTodos))
+    syncTasks = whlib.getHbtTasks(wlTasks, (hbtDailys, hbtTodos), client)
     whlib.printSync(syncTasks)
     whlib.sync(hbt, syncTasks)                  
     
