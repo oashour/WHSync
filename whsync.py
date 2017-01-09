@@ -19,11 +19,11 @@ def main(nonInt):
     api = wunderpy2.WunderApi()	
     auth = whlib.getWLAuth()
     client = api.get_client(auth['accessToken'], auth['clientId'])
- 
+    
     if nonInt:
         print("Program run in non-interactive mode. Won't fetch lists.")
     else:
-        whlib.getNewLists(client) 
+        lists = whlib.getNewLists(client)     
     
     print('Fetching Wunderlist and Habitica tasks.')
     wlTasks = whlib.getWLTasks(client);

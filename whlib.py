@@ -45,7 +45,9 @@ def getNewLists(client):
         allListsFile = open(LIST_CACHE, 'w')  
         for l in lists:
             allListsFile.write("%s\n" % l['id'])
-        allListsFile.close()  
+        allListsFile.close() 
+
+    return lists
 
 def getSyncLists(lists):
     """ Get the IDs of the lists the user wants to sync
