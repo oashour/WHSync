@@ -120,8 +120,12 @@ class Habitica(object):
                                         self.aspect,
                                         str(aspect_id),
                                         self.resource)
-                if check_id:
-                    uri = '%s/%s/score' % (uri, check_id)
+                    if check_id:
+                        uri = '%s/%s/score' % (uri, check_id)
+                else:
+                    uri = '%s/%s/%s' % (uri,
+                                    self.aspect,
+                                    str(aspect_id))
             elif self.aspect == 'tasks':  
                 uri = '%s/%s/%s' % (uri,
                                     self.aspect,
