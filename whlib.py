@@ -45,7 +45,9 @@ def getNewLists(client):
         allListsFile = open(LIST_CACHE, 'w')  
         for l in lists:
             allListsFile.write("%s\n" % l['id'])
-        allListsFile.close()  
+        allListsFile.close() 
+
+    return lists
 
 def getSyncLists(lists):
     """ Get the IDs of the lists the user wants to sync
@@ -117,8 +119,19 @@ def sync(hbt, syncTasks):
     # Add tasks. Simply add them by name
     for task in todosA:
         diff = calcDiff(task['title'])
-        hbt.user.tasks(type='todo', text=task['title'], date = task['due_date'],
-                       priority=diff, _method='post')
+        if 'due_date' in task:
+            newTask = hbt.user.tasks(type='todo', text=task['title'], 
+                                    date = task['due_date'],
+                                    priority=diff, _method='post')
+        else:
+            newTask = hbt.user.tasks(type='todo', text=task['title'],
+                            priority=diff, _method='post')
+        for sub in task['subs']:
+            newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
+            if sub['completed']:
+                cid = newTask['checklist'][-1]['id'] # Last added is last in list
+                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score
+        
         print('Added task "', task['title'], '" to Habitica.',sep='')
     
     # Complete tasks, find the hid of this task and mark it as complete.
@@ -129,8 +142,13 @@ def sync(hbt, syncTasks):
     # Add dailys. Simply add them by name
     for task in dailysA:
         diff = calcDiff(task['title'])
-        hbt.user.tasks(type='daily', text=task['title'], notes=task['id'], 
+        newTask = hbt.user.tasks(type='daily', text=task['title'], notes=task['id'], 
                        priority=diff, everyX=task['recurrence_count'], _method='post')
+        for sub in task['subs']:
+            newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
+            if sub['completed']:
+                cid = newTask['checklist'][-1]['id'] # Last added is last in list
+                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score 
         print('Added daily "', task['title'], '" to Habitica.', sep='')
  
     # Delete dailys, find the hid of this task and mark it as complete.
@@ -168,13 +186,15 @@ def printSync(syncTasks):
                                 in dailysC if 'text' in d]))
     print('------------------')
 
-def getHbtTasks(wlTasks, hbtTasks):
+def getHbtTasks(wlTasks, hbtTasks, client):
     # Work on Todos (second element in each tuple)
     x = hbtTasks[1]; y = wlTasks[1]    
     todosC = [item for item in x
                        if item['text'] not in [d['title'] for d in y]]
     todosA = [item for item in y
                   if item['title'] not in [d['text'] for d in x]]
+    for item in todosA:
+        item['subs'] = client.get_task_subtasks(item['id'], completed=True)
     #for task in todosA: # In case time zones are needed
     #    date = datetime.strptime(task['due_date'],'%Y-%m-%d') # Strip formatting
     #    zone = 2 # How to determine automatically?
@@ -190,7 +210,9 @@ def getHbtTasks(wlTasks, hbtTasks):
     # Dailys in WL but not in Habitica are to be added
     dailysA = [item for item in y
                   if item['title'] not in [d['text'] for d in x]]
-    
+    for item in dailysA:
+        item['subs'] = client.get_task_subtasks(item['id'], completed=True)
+        
     # Dailies in both but whose note is different from the WL ID
     # are to be completed. Then change their note to the new WL ID.
     dailysC = []

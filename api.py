@@ -105,6 +105,7 @@ class Habitica(object):
     def __call__(self, **kwargs):
         method = kwargs.pop('_method', 'get')
         aspect_id = kwargs.pop('_id', None)
+        check_id = kwargs.pop('_checkid', None)
         
         # build up URL... Habitica's api is the *teeniest* bit annoying
         # so either i need to find a cleaner way here, or i should
@@ -114,10 +115,18 @@ class Habitica(object):
             uri = '%s/%s' % (self.auth['url'],
                                 API_URI_BASE)
             if aspect_id is not None:
-                uri = '%s/%s/%s' % (uri,
+                if self.resource == 'checklist':
+                    uri = '%s/%s/%s/%s' % (uri,
+                                        self.aspect,
+                                        str(aspect_id),
+                                        self.resource)
+                    if check_id:
+                        uri = '%s/%s/score' % (uri, check_id)
+                else:
+                    uri = '%s/%s/%s' % (uri,
                                     self.aspect,
                                     str(aspect_id))
-            elif self.aspect == 'tasks':
+            elif self.aspect == 'tasks':  
                 uri = '%s/%s/%s' % (uri,
                                     self.aspect,
                                     self.resource)
@@ -146,7 +155,10 @@ class Habitica(object):
                                             params=kwargs)
 
         #print(res.url)  # debug...
-        if res.status_code == requests.codes.ok:
-            return res.json()["data"]
+        if res.status_code == requests.codes.ok or requests.codes.created:
+            if "data" in res.json():
+                return res.json()["data"]
+            else:
+                return None
         else:
             res.raise_for_status()
