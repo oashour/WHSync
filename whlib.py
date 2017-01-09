@@ -6,6 +6,50 @@ LIST_CACHE = 'listCache.txt'
 WL_AUTH = 'wlAuth.txt'
 HABITICA_REQUEST_WAIT_TIME = 0.5  # time to pause between concurrent requestsdef getNewLists(lists):
  
+def updateStats(hbt, client, lists):
+    user = hbt.user()
+    stats = user['stats']
+    level = 'Level '+str(stats['lvl'])
+    exp = ' \U0001F31F '+str(stats['exp'])+'/'+str(stats['toNextLevel'])
+    hp = '\U00002764 '+str(round(stats['hp']))+'/'+str(stats['maxHealth'])
+    mp = ' \U0001F52E '+str(round(stats['mp']))+'/'+str(stats['maxMP'])
+    gold = int(stats['gp'])
+    silver = int((stats['gp'] - int(gold))*100)
+    gems = user['balance']
+    
+    gp = u'\U0001F48E %s \U0001F534 %s \U000026AA %s' % (str(gems), 
+                                                         str(gold),
+                                                         str(silver))
+    
+    firstTime = 1
+    for list in lists:
+        if list['title'] == 'Habitica '+u'\U00002694':
+            firstTime = 0
+            lid = list['id']
+            break
+     
+    if not firstTime:
+        tasks = client.get_tasks(lid)
+        for task in tasks:
+            if task['title'].split()[0] == 'Level':
+                rev = task['revision']
+                tid=task['id']
+                client.update_task(task_id=tid,revision=rev,title=level+exp)
+            elif task['title'].split()[0] == u'\U0001F48E':
+                rev = task['revision']
+                tid=task['id']
+                client.update_task(task_id=tid,revision=rev,title=gp)
+            elif task['title'].split()[0] == u'\U00002764':
+                rev = task['revision']
+                tid=task['id']
+                client.update_task(task_id=tid,revision=rev,title=hp+mp) 
+    elif firstTime:
+        print("Stats don't exist. Creating list and tasks.")
+        lid = client.create_list(title='Habitica '+u'\U00002694')['id']
+        client.create_task(list_id=lid,title=level)
+        client.create_task(list_id=lid,title=hp+mp)
+        client.create_task(list_id=lid,title=gp)
+ 
 def getNewLists(client):
     """ Get all the new Wunderlist lists not in cache and refresh cache
     

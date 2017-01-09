@@ -33,7 +33,10 @@ def main(nonInt):
     print('Determining what tasks to add, delete or complete.')
     syncTasks = whlib.getHbtTasks(wlTasks, (hbtDailys, hbtTodos), client)
     whlib.printSync(syncTasks)
-    whlib.sync(hbt, syncTasks)                  
+    whlib.sync(hbt, syncTasks) 
+
+    print('Pushing Habitica stats to Wunderlist.')
+    whlib.updateStats(hbt, client, lists)
     
 # 6 30 41 44 46 47 48 49 50 51
 if __name__ == '__main__':
