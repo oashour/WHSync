@@ -61,9 +61,10 @@ def getSyncLists(lists):
             listId = input('Input the number of lists you need: ').split()
             if not listId:
                 raise ValueError('No input. Please try again. q to exit.')
-            break
-            if listId == 'q':
+            elif listId[0] == 'q':
+                print('No lists to sync.')
                 return
+            break
         except ValueError as e:
             print(e)
     
