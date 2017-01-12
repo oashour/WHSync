@@ -16,11 +16,11 @@ def updateStats(hbt, client, lists):
     gold = int(stats['gp'])
     silver = int((stats['gp'] - int(gold))*100)
     gems = user['balance']
-    
+
     gp = u'\U0001F48E %s \U0001F534 %s \U000026AA %s' % (str(gems), 
                                                          str(gold),
                                                          str(silver))
-    
+
     firstTime = 1
     for list in lists:
         if list['title'] == 'Habitica '+u'\U00002694':
@@ -46,10 +46,10 @@ def updateStats(hbt, client, lists):
     elif firstTime:
         print("Stats don't exist. Creating list and tasks.")
         lid = client.create_list(title='Habitica '+u'\U00002694')['id']
-        client.create_task(list_id=lid,title=level)
+        client.create_task(list_id=lid,title=level+exp)
         client.create_task(list_id=lid,title=hp+mp)
         client.create_task(list_id=lid,title=gp)
- 
+
 def getNewLists(client):
     """ Get all the new Wunderlist lists not in cache and refresh cache
     

@@ -21,6 +21,7 @@ def main(nonInt):
     client = api.get_client(auth['accessToken'], auth['clientId'])
     
     if nonInt:
+        lists = client.get_lists() # Get lists
         print("Program run in non-interactive mode. Won't fetch lists.")
     else:
         lists = whlib.getNewLists(client)     
@@ -51,5 +52,6 @@ if __name__ == '__main__':
                 print('==================================')
                 sleep(int(sys.argv[1]))           
             except:
+                print('Something failed. Sleeping again.')
                 sleep(int(sys.argv[1]))
     
