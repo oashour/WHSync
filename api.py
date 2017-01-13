@@ -59,26 +59,6 @@ def load_auth(configfile):
 
     # Return auth data as a dictionnary
     return rv
-
-def get_task_ids(tids):
-    """
-    handle task-id formats such as:
-        habitica todos done 3
-        habitica todos done 1,2,3
-        habitica todos done 2 3
-        habitica todos done 1-3,4 8
-    tids is a seq like (last example above) ('1-3,4' '8')
-    """
-    logging.debug('raw task ids: %s' % tids)
-    task_ids = []
-    for raw_arg in tids:
-        for bit in raw_arg.split(','):
-            if '-' in bit:
-                start, stop = [int(e) for e in bit.split('-')]
-                task_ids.extend(range(start, stop + 1))
-            else:
-                task_ids.append(int(bit))
-    return [e - 1 for e in set(task_ids)]	
 	
 class Habitica(object):
     """
