@@ -18,7 +18,9 @@ WHSync is a simple python script that synchronizes tasks from Wunderlist to Habi
 ![alt tag](http://i.imgur.com/sHwbIIQ.png)
 
 Two important things to notice:
+
 1. The version of wunderpy2 used is slightly different from the one on pip. You can clone my own fork and install it, this had a bug fix to support python3.
+
 2. The version of habitica (the python library) used is also different. It has been updated to include extra features, can also be cloned and installed from my own fork.
 
 You can run the script as:
