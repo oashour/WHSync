@@ -205,7 +205,8 @@ def sync(hbt, syncTasks):
     for task in dailysA:
         diff = calcDiff(task['title'])
         newTask = hbt.user.tasks(type='daily', text=task['title'], notes=task['id'], 
-                       priority=diff, everyX=task['recurrence_count'], _method='post')
+                       priority=diff, everyX=task['recurrence_count'], 
+                       startDate=task['due_date'], _method='post')
         for sub in task['subs']:
             newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
             if sub['completed']:
