@@ -2,9 +2,11 @@ from habitica import api as habiticaAPI
 import wunderpy2
 import whlib
 import sys
+import os
 from time import sleep
 
-AUTH_CONF = '/home/omar/Dropbox/GitHub/WHSync/auth.cfg'
+
+AUTH_CONF = os.path.expanduser('~') + '/.config/whsync/auth.cfg'
 
 def main(nonInt):
     print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')

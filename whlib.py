@@ -6,8 +6,8 @@ try:
 except:
     import configparser
 
-SYNC_LIST = '/home/omar/Dropbox/GitHub/WHSync/syncId.txt'
-LIST_CACHE = '/home/omar/Dropbox/GitHub/WHSync/listCache.txt'
+SYNC_LIST = os.path.expanduser('~') + '/.config/whsync/syncId.txt'
+LIST_CACHE = os.path.expanduser('~') + '/.config/whsync/listCache.txt'
  
 def updateStats(hbt, client, lists):
     user = hbt.user()
