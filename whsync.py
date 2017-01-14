@@ -4,12 +4,12 @@ import whlib
 import sys
 from time import sleep
 
-AUTH_CONF = 'auth.txt'
+AUTH_CONF = 'auth.cfg'
 
 def main(nonInt):
     print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')
     # Load Configuration
-    auth = whlib.load_auth(AUTH_CONF)
+    auth = whlib.loadAuth(AUTH_CONF)
     
     print('Connecting to APIs.')
     # Connect to Habitica
