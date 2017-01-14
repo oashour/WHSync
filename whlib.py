@@ -303,8 +303,11 @@ def getWLTasks(client):
     for id in syncId: # This significantly slows down the program
         tasks.extend(client.get_tasks(id))
         
-    for task in tasks:       
-        task['title'] = client.get_list(task['list_id'])['title']+': '+task['title']       
+    for task in tasks: 
+        name = client.get_list(task['list_id'])['title']
+        if name == 'inbox':
+            name = 'Inbox'
+        task['title'] = name +': '+task['title']       
         if key in task:
             if task[key] == 'week':
                 task[cKey] = task[cKey]*7    
