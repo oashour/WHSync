@@ -5,7 +5,6 @@ import sys
 import os
 from time import sleep
 
-
 AUTH_CONF = os.path.expanduser('~') + '/.config/whsync/auth.cfg'
 
 def main(nonInt):
@@ -50,7 +49,6 @@ def main(nonInt):
     
     return syncTasks+ (user,)
     
-# 6 30 41 44 46 47 48 49 50 51
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         nonInt = False
