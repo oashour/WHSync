@@ -6,10 +6,12 @@ try:
 except:
     import configparser
 
+from datetime import datetime, timedelta    
+    
 SYNC_LIST = os.path.expanduser('~') + '/.config/whsync/syncId.txt'
 LIST_CACHE = os.path.expanduser('~') + '/.config/whsync/listCache.txt'
  
-def updateStats(hbt, client, lists):
+def updateStats(hbt, client, lists, timeZone):
     user = hbt.user()
     stats = user['stats']
     level = 'Level '+str(stats['lvl'])
@@ -23,7 +25,10 @@ def updateStats(hbt, client, lists):
     gp = u'\U0001F48E %s \U0001F534 %s \U000026AA %s' % (str(gems), 
                                                          str(gold),
                                                          str(silver))
-
+    
+    now = datetime.utcnow() + timedelta(hours=int(timeZone))
+    now = u'\U000023F3 ' + now.strftime('%I:%M %p %Y-%m-%d ')
+    
     firstTime = 1
     for list in lists:
         if list['title'] == 'Habitica '+u'\U00002694':
@@ -46,12 +51,17 @@ def updateStats(hbt, client, lists):
                 rev = task['revision']
                 tid=task['id']
                 client.update_task(task_id=tid,revision=rev,title=hp+mp) 
+            elif task['title'].split()[0] == u'\U000023F3':
+                rev = task['revision']
+                tid=task['id']
+                client.update_task(task_id=tid,revision=rev,title=now)
     elif firstTime:
         print("Stats don't exist. Creating list and tasks.")
         lid = client.create_list(title='Habitica '+u'\U00002694')['id']
         client.create_task(list_id=lid,title=level+exp)
         client.create_task(list_id=lid,title=hp+mp)
         client.create_task(list_id=lid,title=gp)
+        client.create_task(list_id=lid,title=now)
         
     return user
 
@@ -329,6 +339,7 @@ def loadAuth(configfile):
               'url': config.get('Habitica', 'url'),
               'checklists': config.get('Habitica', 'checklists'),
               'client_id': config.get('Wunderlist', 'client_id'),
+              'time_zone': config.get('Time', 'time_zone'),
               'access_token': config.get('Wunderlist', 'access_token')}
 
     except configparser.NoSectionError as e:

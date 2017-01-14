@@ -46,7 +46,7 @@ def main(nonInt):
     whlib.sync(hbt, syncTasks) 
 
     print('Pushing Habitica stats to Wunderlist.')
-    user = whlib.updateStats(hbt, client, lists)
+    user = whlib.updateStats(hbt, client, lists, auth['time_zone'])
     
     return syncTasks+ (user,)
     
