@@ -1,10 +1,13 @@
 import os 
 from time import sleep
 
+try:
+    import ConfigParser as configparser
+except:
+    import configparser
+
 SYNC_LIST = 'syncId.txt'
 LIST_CACHE = 'listCache.txt'
-WL_AUTH = 'wlAuth.txt'
-HABITICA_REQUEST_WAIT_TIME = 0.5  # time to pause between concurrent requestsdef getNewLists(lists):
  
 def updateStats(hbt, client, lists):
     user = hbt.user()
@@ -177,7 +180,7 @@ def sync(hbt, syncTasks):
             newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
             if sub['completed']:
                 cid = newTask['checklist'][-1]['id'] # Last added is last in list
-                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score
+                hbt.checklist.tasks(_id=newTask['id'], _id2=cid, _method='post') # score
         
         print('Added task "', task['title'], '" to Habitica.',sep='')
     
@@ -195,7 +198,7 @@ def sync(hbt, syncTasks):
             newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
             if sub['completed']:
                 cid = newTask['checklist'][-1]['id'] # Last added is last in list
-                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score 
+                hbt.checklist.tasks(_id=newTask['id'], _id2=cid, _method='post') # score 
         print('Added daily "', task['title'], '" to Habitica.', sep='')
  
     # Delete dailys, find the hid of this task and mark it as complete.
@@ -300,13 +303,45 @@ def getWLTasks(client):
     
     return (dailys, todos)
 
-def getWLAuth():
-    with open(WL_AUTH) as f:
-        strings = f.readlines()
-    text = [str.split(':')[1].strip() for str in strings]
-    keys = {'accessToken': text[0], 'clientId': text[1], 'clientSecret': text[2]}
-    return keys 
+def loadAuth(configfile):
+    """Get authentication data from the AUTH_CONF file."""
 
+    print('Loading habitica and Wunderlist auth data from "%s"' % configfile)
+
+    try:
+        cf = open(configfile)
+    except IOError:
+        print("Unable to find '%s'." % configfile)
+        exit(1)
+
+    config = configparser.SafeConfigParser()
+    config.readfp(cf)
+
+    cf.close()
+
+    # Get data from config
+    rv = {}
+    try:
+        rv = {'x-api-user': config.get('Habitica', 'login'),
+              'x-api-key': config.get('Habitica', 'password'),
+              'url': config.get('Habitica', 'url'),
+              'checklists': config.get('Habitica', 'checklists'),
+              'client_id': config.get('Wunderlist', 'client_id'),
+              'access_token': config.get('Wunderlist', 'access_token')}
+
+    except configparser.NoSectionError as e:
+        print("Missing section in auth file '%s': %s"
+                  % (configfile, e.message))
+        exit(1)            
+    except configparser.NoOptionError as e:
+        print("Missing option in auth file '%s': %s"
+                      % (configfile, e.message))
+        exit(1)
+        
+    # Return auth data as a dictionnary
+    return rv  
+    
+    
 def calcDiff(task):
     diffKeys = ['T', 'E', 'M', 'H']
     tags = [task.strip("#") for task in task.split() 
