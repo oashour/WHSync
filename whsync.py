@@ -1,28 +1,35 @@
-import api as habiticaAPI
+from habitica import api as habiticaAPI
 import wunderpy2
 import whlib
 import sys
 from time import sleep
 
 AUTH_CONF = 'auth.txt'
-WL_AUTH = 'wlAuth.txt'
 
 def main(nonInt):
     print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')
+    # Load Configuration
+    auth = whlib.load_auth(AUTH_CONF)
+    
     print('Connecting to APIs.')
-    # Set up Habitica
-    auth = habiticaAPI.load_auth(AUTH_CONF) # Set up auth
-    hbt = habiticaAPI.Habitica(auth=auth)   # instantiate api service
+    # Connect to Habitica
+    try:
+        hbt = habiticaAPI.Habitica(auth=auth)   # instantiate api service
+    except:
+        print('Unable to connect to Habitica.')
+        exit(1)
 
-    # Set up Wunderlist
-    # instantiate API servicd
+    # Connect to Wunderlist
     api = wunderpy2.WunderApi()	
-    auth = whlib.getWLAuth()
-    client = api.get_client(auth['accessToken'], auth['clientId'])
+    try:
+        client = api.get_client(auth['access_token'], auth['client_id'])
+    except:
+        print("Can't connect to Wunderlist.")
+        exit(1)
     
     if nonInt:
         lists = client.get_lists() # Get lists
-        print("Program run in non-interactive mode. Won't fetch lists.")
+        print("Program run in non-interactive mode. Won't check new lists.")
     else:
         lists = whlib.getNewLists(client)     
     
