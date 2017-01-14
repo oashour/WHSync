@@ -6,8 +6,8 @@ try:
 except:
     import configparser
 
-SYNC_LIST = 'syncId.txt'
-LIST_CACHE = 'listCache.txt'
+SYNC_LIST = '/home/omar/Dropbox/GitHub/WHSync/syncId.txt'
+LIST_CACHE = '/home/omar/Dropbox/GitHub/WHSync/listCache.txt'
  
 def updateStats(hbt, client, lists):
     user = hbt.user()
@@ -52,6 +52,8 @@ def updateStats(hbt, client, lists):
         client.create_task(list_id=lid,title=level+exp)
         client.create_task(list_id=lid,title=hp+mp)
         client.create_task(list_id=lid,title=gp)
+        
+    return user
 
 def getNewLists(client):
     """ Get all the new Wunderlist lists not in cache and refresh cache
@@ -288,7 +290,7 @@ def getWLTasks(client):
     dailys = [] # List of wl dailies
     key = 'recurrence_type'; cKey = 'recurrence_count'
     
-    for id in syncId:
+    for id in syncId: # This significantly slows down the program
         tasks.extend(client.get_tasks(id))
         
     for task in tasks:       

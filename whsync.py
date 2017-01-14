@@ -4,7 +4,7 @@ import whlib
 import sys
 from time import sleep
 
-AUTH_CONF = 'auth.cfg'
+AUTH_CONF = '/home/omar/Dropbox/GitHub/WHSync/auth.cfg'
 
 def main(nonInt):
     print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')
@@ -44,7 +44,9 @@ def main(nonInt):
     whlib.sync(hbt, syncTasks) 
 
     print('Pushing Habitica stats to Wunderlist.')
-    whlib.updateStats(hbt, client, lists)
+    user = whlib.updateStats(hbt, client, lists)
+    
+    return syncTasks+ (user,)
     
 # 6 30 41 44 46 47 48 49 50 51
 if __name__ == '__main__':
