@@ -180,7 +180,7 @@ def sync(hbt, syncTasks):
             newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
             if sub['completed']:
                 cid = newTask['checklist'][-1]['id'] # Last added is last in list
-                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score
+                hbt.checklist.tasks(_id=newTask['id'], _id2=cid, _method='post') # score
         
         print('Added task "', task['title'], '" to Habitica.',sep='')
     
@@ -198,7 +198,7 @@ def sync(hbt, syncTasks):
             newTask = hbt.checklist.tasks(_id=newTask['id'], text=sub['title'], _method='post')
             if sub['completed']:
                 cid = newTask['checklist'][-1]['id'] # Last added is last in list
-                hbt.checklist.tasks(_id=newTask['id'], _checkid=cid, _method='post') # score 
+                hbt.checklist.tasks(_id=newTask['id'], _id2=cid, _method='post') # score 
         print('Added daily "', task['title'], '" to Habitica.', sep='')
  
     # Delete dailys, find the hid of this task and mark it as complete.
