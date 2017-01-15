@@ -40,9 +40,13 @@ def main(nonInt):
     hbtDailys = hbt.user.tasks(type='dailys')
     
     print('Determining what tasks to add, delete or complete.')
-    syncTasks = whlib.getHbtTasks(wlTasks, (hbtDailys, hbtTodos), client)
+    syncTasks = whlib.getHbtTasks(wlTasks, (hbtDailys, hbtTodos), client, hbt)
+    print('Synchronizing tasks.')
     whlib.printSync(syncTasks)
     whlib.sync(hbt, syncTasks) 
+    
+    print('Synchronizing subtasks.')
+    whlib.syncSubs(wlTasks, (hbtDailys, hbtTodos), client, hbt)
 
     print('Pushing Habitica stats to Wunderlist.')
     user = whlib.updateStats(hbt, client, lists, auth['time_zone'])

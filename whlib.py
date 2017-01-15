@@ -249,7 +249,36 @@ def printSync(syncTasks):
                                 in dailysC if 'text' in d]))
     print('------------------')
 
-def getHbtTasks(wlTasks, hbtTasks, client):
+def syncSubs(wlTasks, hbtTasks, client, hbt):
+    # This function is very slow...
+    wlTasks[0].extend(wlTasks[1])
+    hbtTasks[0].extend(hbtTasks[1])
+    tasks = [(a,b) for a in wlTasks[0] for b in hbtTasks[0] if a['title'] == b['text']]
+    #k[0] -> current wunderlist task, k[1] --> parallel task in Habitica
+    #m[0] --> current wunderlist suntask, m[1] --> parallel check in Habitica
+    for k in tasks:
+        if k[0]['title'] == k[1]['text']:
+            subs = client.get_task_subtasks(k[0]['id'], completed=True)
+            checks = k[1]['checklist']
+            subsCheck = [(a,b) for a in subs for b in checks if a['title'] == b['text']]
+            subsAdd = [a for a in subs if a['title'] not in [d['text'] for d in checks]]
+            subsDel = [b for b in checks if b['text'] not in [d['title'] for d in subs]]
+            for m in subsCheck:
+                if m[0]['completed'] and not m[1]['completed']: #comp on WL and not HBT
+                    print('Checking off %s in task %s' % (m[0]['title'], k[0]['title']))
+                    hbt.checklist.tasks(_id=k[1]['id'], _id2=m[1]['id'], _method='post')
+            for m in subsAdd:
+                print('Adding check %s in task %s' % (m['title'], k[0]['title']))
+                newTask = hbt.checklist.tasks(_id=k[1]['id'], text=m['title'], _method='post')
+                if m['completed']: #Already completed on WL
+                    cid = newTask['checklist'][-1]['id']
+                    print('Checking off %s in task %s' % (m['title'], k[0]['title']))
+                    hbt.checklist.tasks(_id=k[1]['id'], _id2=cid, _method='post')
+            for m in subsDel:
+                print('Deleting check %s in task %s' % (m['text'], k[0]['title']))
+                hbt.checklist.tasks(_id=k[1]['id'], _id2=m['id'], _method='delete')
+      
+def getHbtTasks(wlTasks, hbtTasks, client, hbt):
     # Work on Todos (second element in each tuple)
     x = hbtTasks[1]; y = wlTasks[1]    
     todosC = [item for item in x
@@ -258,12 +287,6 @@ def getHbtTasks(wlTasks, hbtTasks, client):
                   if item['title'] not in [d['text'] for d in x]]
     for item in todosA:
         item['subs'] = client.get_task_subtasks(item['id'], completed=True)
-    #for task in todosA: # In case time zones are needed
-    #    date = datetime.strptime(task['due_date'],'%Y-%m-%d') # Strip formatting
-    #    zone = 2 # How to determine automatically?
-    #    date = date - timedelta(days=1, hour=-zone)
-    #    date = datetime.strftime(date, '%Y-%m-%dT%H:00:00.000Z')
-    #    task['due_date'] = date
     
     # Work on Dailies
     x = hbtTasks[0]; y = wlTasks[0];
