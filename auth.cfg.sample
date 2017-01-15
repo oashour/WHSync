@@ -1,0 +1,12 @@
+[Habitica]
+url = https://habitica.com
+login = 
+password = 
+checklists = false
+
+[Wunderlist]
+access_token = 
+client_id = 
+
+[Time]
+time_zone = 
