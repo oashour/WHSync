@@ -8,7 +8,8 @@ from time import sleep
 AUTH_CONF = os.path.expanduser('~') + '/.config/whsync/auth.cfg'
 
 def main(nonInt):
-    print('Welcome to WHSync, a sync utility for Habitica and Wunderlist.')
+    now = datetime.utcnow() + timedelta(hours=int(timeZone))
+    print('Welcome to WHSync. Current time:'+now.strftime('%I:%M %p %Y-%m-%d '))
     # Load Configuration
     auth = whlib.loadAuth(AUTH_CONF)
     
