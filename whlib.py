@@ -15,7 +15,7 @@ def updateStats(hbt, client, lists, timeZone):
     user = hbt.user()
     stats = user['stats']
     level = 'Level '+str(stats['lvl'])
-    exp = ' \U0001F31F '+str(stats['exp'])+'/'+str(stats['toNextLevel'])
+    exp = ' \U0001F31F '+str(round(stats['exp']))+'/'+str(stats['toNextLevel'])
     hp = '\U00002764 '+str(round(stats['hp']))+'/'+str(stats['maxHealth'])
     mp = ' \U0001F52E '+str(round(stats['mp']))+'/'+str(stats['maxMP'])
     gold = int(stats['gp'])
