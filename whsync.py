@@ -9,10 +9,10 @@ from datetime import datetime, timedelta
 AUTH_CONF = os.path.expanduser('~') + '/.config/whsync/auth.cfg'
 
 def main(nonInt):
-    now = datetime.utcnow() + timedelta(hours=int(timeZone))
-    print('Welcome to WHSync. Current time:'+now.strftime('%I:%M %p %Y-%m-%d '))
     # Load Configuration
     auth = whlib.loadAuth(AUTH_CONF)
+    now = datetime.utcnow() + timedelta(hours=int(auth['time_zone']))
+    print('Welcome to WHSync. Current time:'+now.strftime('%I:%M %p %Y-%m-%d '))
     
     print('Connecting to APIs.')
     # Connect to Habitica
