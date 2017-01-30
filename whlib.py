@@ -20,6 +20,7 @@ def updateStats(hbt, client, lists, timeZone):
     mp = ' \U0001F52E '+str(floor(stats['mp']))+'/'+str(stats['maxMP'])
     gold = int(stats['gp'])
     silver = int((stats['gp'] - int(gold))*100)
+    gems = user['balance']*4
 
     gp = u'\U0001F48E %s \U0001F534 %s \U000026AA %s' % (str(gems), 
                                                          str(gold),
