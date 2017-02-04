@@ -1,5 +1,6 @@
 import os 
 from time import sleep
+import math
 
 try:
     import ConfigParser as configparser
@@ -15,12 +16,12 @@ def updateStats(hbt, client, lists, timeZone):
     user = hbt.user()
     stats = user['stats']
     level = 'Level '+str(stats['lvl'])
-    exp = ' \U0001F31F '+str(floor(stats['exp']))+'/'+str(stats['toNextLevel'])
-    hp = '\U00002764 '+str(floor(stats['hp']))+'/'+str(stats['maxHealth'])
-    mp = ' \U0001F52E '+str(floor(stats['mp']))+'/'+str(stats['maxMP'])
+    exp = ' \U0001F31F '+str(math.floor(stats['exp']))+'/'+str(stats['toNextLevel'])
+    hp = '\U00002764 '+str(math.ceil(stats['hp']))+'/'+str(stats['maxHealth'])
+    mp = ' \U0001F52E '+str(math.floor(stats['mp']))+'/'+str(stats['maxMP'])
     gold = int(stats['gp'])
     silver = int((stats['gp'] - int(gold))*100)
-    gems = user['balance']*4
+    gems = int(user['balance']*4)
 
     gp = u'\U0001F48E %s \U0001F534 %s \U000026AA %s' % (str(gems), 
                                                          str(gold),
