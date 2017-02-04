@@ -278,6 +278,7 @@ def syncSubs(wlTasks, hbtTasks, client, hbt):
             for m in subsDel:
                 print('Deleting check %s in task %s' % (m['text'], k[0]['title']))
                 hbt.checklist.tasks(_id=k[1]['id'], _id2=m['id'], _method='delete')
+                sleep(0.1)
       
 def getHbtTasks(wlTasks, hbtTasks, client, hbt):
     # Work on Todos (second element in each tuple)
